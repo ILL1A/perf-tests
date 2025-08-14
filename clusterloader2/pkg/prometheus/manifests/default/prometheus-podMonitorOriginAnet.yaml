@@ -1,0 +1,25 @@
+{{$PROMETHEUS_SCRAPE_ORIGIN_ANET := DefaultParam .CL2_PROMETHEUS_SCRAPE_ORIGIN_ANET false}}
+{{$PROMETHEUS_SCRAPE_ORIGIN_ANET_PORT := DefaultParam .CL2_PROMETHEUS_SCRAPE_ORIGIN_ANET_PORT 9990}}
+{{$PROMETHEUS_SCRAPE_ORIGIN_ANET_INTERVAL := DefaultParam .CL2_PROMETHEUS_SCRAPE_ORIGIN_ANET_INTERVAL "10m"}}
+
+{{if $PROMETHEUS_SCRAPE_ORIGIN_ANET}}
+
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  labels:
+    k8s-app: anet-pods
+  name: anet-pods
+  namespace: monitoring
+spec:
+  podMetricsEndpoints:
+    - interval: {{ $PROMETHEUS_SCRAPE_ORIGIN_ANET_INTERVAL }}
+      portNumber: {{ $PROMETHEUS_SCRAPE_ORIGIN_ANET_PORT }}
+  jobLabel: k8s-app
+  selector:
+    matchLabels:
+      k8s-app: cilium
+  namespaceSelector:
+    matchNames:
+      - kube-system
+{{end}}
